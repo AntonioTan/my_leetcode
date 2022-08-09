@@ -26,8 +26,6 @@ func isAdditiveNumber(num string) bool {
 			}
 			next, _ := strconv.Atoi(num[i+1 : j+1])
 			if find(cur, next, num[j+1:len(num)]) {
-				
-				// fmt.Printf("%v %v", cur, next)
 				return true
 			}
 		}
