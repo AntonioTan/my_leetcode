@@ -1,47 +1,54 @@
+import java.lang.management.PlatformLoggingMXBean;
+
 /*
- * @lc app=leetcode id=207 lang=java
+ * @lc app=leetcode id=210 lang=java
  *
- * [207] Course Schedule
+ * [210] Course Schedule II
  */
 
 // @lc code=start
 class Solution {
     enum Color {
         WHITE, GREY, BLACK
-    }
+    };
     HashMap<Integer, Color> colorMap = new HashMap<>();
     HashMap<Integer, HashSet<Integer>> adjacentMap = new HashMap<>();
-    public boolean canFinish(int numCourses, int[][] prerequisites) {
+    int[] TopologicalOrder;
+    int index = 0;
+    public int[] findOrder(int numCourses, int[][] prerequisites) {
+        TopologicalOrder = new int[numCourses];
         for(int i=0; i<numCourses; i++) {
-            adjacentMap.put(i, new HashSet<Integer>());
             colorMap.put(i, Color.WHITE);
         }
         for(int i=0; i<prerequisites.length; i++) {
             int from = prerequisites[i][0];
             int to = prerequisites[i][1];
-            adjacentMap.get(from).add(to);
+            HashSet<Integer> arr = adjacentMap.getOrDefault(from, new HashSet<Integer>());
+            arr.add(to);
+            adjacentMap.put(from, arr);
         }
         for(int i=0; i<numCourses; i++) {
             if(!dfs(i)) {
-                return false;
+               return new int[0]; 
             }
         }
-        return true;
+        return TopologicalOrder;
     }
     public boolean dfs(int target) {
         if(colorMap.get(target)==Color.BLACK) {
             return true;
         }
         colorMap.put(target, Color.GREY);
-        for(int neighbor: adjacentMap.get(target)) {
+        for(int neighbor: adjacentMap.getOrDefault(target, new HashSet<Integer>())) {
             if(colorMap.get(neighbor)==Color.WHITE) {
                 if(!dfs(neighbor)) {
                     return false;
                 }
-            } else if (colorMap.get(neighbor)==Color.GREY) {
+            } else if(colorMap.get(neighbor)==Color.GREY) {
                 return false;
             }
         }
+        TopologicalOrder[index++] = target;
         colorMap.put(target, Color.BLACK);
         return true;
     }
