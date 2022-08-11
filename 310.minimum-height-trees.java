@@ -6,49 +6,44 @@
 
 // @lc code=start
 class Solution {
-    // use map to construct adjacent edge matrix
     public List<Integer> findMinHeightTrees(int n, int[][] edges) {
-        if(n<=2) {
-            List<Integer> rst = new ArrayList<>();
-            for(int i=0; i<n; i++) {
-                rst.add(i);
-            }
-            return rst;
-        }
-        List<HashSet<Integer>> mem = new ArrayList<>();
-        for(int i=0; i<n; i++)  {
-            mem.add(new HashSet<Integer>());
+        int[] mem = new int[n];
+        int remNum = n;
+        List<HashSet<Integer>> adjacentArr = new ArrayList<>();
+        for(int i=0; i<n; i++) {
+            adjacentArr.add(new HashSet<Integer>());
         }
         for(int i=0; i<edges.length; i++) {
-            int from = edges[i][0];
-            int to = edges[i][1];
-            mem.get(from).add(to);
-            mem.get(to).add(from);
+            int[] edge = edges[i];
+            int from = edge[0];
+            int to = edge[1];
+            adjacentArr.get(from).add(to);
+            adjacentArr.get(to).add(from);
         }
         List<Integer> leaves = new ArrayList<>();
         for(int i=0; i<n; i++) {
-            if(mem.get(i).size()==1) {
+            if(adjacentArr.get(i).size()<=1) {
                 leaves.add(i);
+                mem[i] = 1;
             }
         }
-        int remNode = n;
-        while(remNode>2){
-            List<Integer> newLeaves = new ArrayList<>();
-            for(int leave: leaves) {
-                remNode -= 1;
-                HashSet<Integer> link = mem.get(leave);
-                for(int node: link) {
-                    HashSet<Integer> temp = mem.get(node);
-                    temp.remove(leave);
-                    if(temp.size()==1) {
-                        newLeaves.add(node);
+        while(remNum>2) {
+            List<Integer> temp = new ArrayList<>();
+            for(int i=0; i<leaves.size(); i++) {
+                int next = leaves.get(i);
+                remNum -= 1;
+                HashSet<Integer> arr = adjacentArr.get(next);
+                for(int neighbor: arr) {
+                    adjacentArr.get(neighbor).remove(next);
+                    if(adjacentArr.get(neighbor).size()==1 && mem[neighbor]!=1) {
+                        mem[neighbor] = 1;
+                        temp.add(neighbor);
                     }
                 }
-                leaves = newLeaves;
             }
+            leaves = temp;
         }
         return leaves;
-
 
     }
 }

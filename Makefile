@@ -5,3 +5,4 @@ commit:
 	echo "$D"
 	git add .
 	git commit -m "${D}"
+
